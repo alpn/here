@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -8,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 const htmlPrefix = "<html><body><h2>Here</h2><hr><ul>\n"
@@ -61,10 +63,24 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func main() {
+func run(portNumber int) error {
 
 	http.HandleFunc("/", requestHandler)
-	if err := http.ListenAndServe("127.0.0.1:9898", nil); err != nil {
-		fmt.Println(err)
+	if err := http.ListenAndServe("127.0.0.1:"+strconv.Itoa(portNumber), nil); err != nil {
+		return err
 	}
+	return nil
+}
+func main() {
+
+	var portNumber int
+
+	flag.IntVar(&portNumber, "port", 9898, "port number to listen on")
+	flag.Parse()
+
+	if err := run(portNumber); err != nil {
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
+		os.Exit(1)
+	}
+
 }
