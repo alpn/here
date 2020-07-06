@@ -64,7 +64,7 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 func main() {
 
 	http.HandleFunc("/", requestHandler)
-	if err := http.ListenAndServe(":9898", nil); err != nil {
+	if err := http.ListenAndServe("127.0.0.1:9898", nil); err != nil {
 		fmt.Println(err)
 	}
 }
