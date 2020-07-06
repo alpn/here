@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 )
 
 const htmlPrefix = "<html><body><h2>Here</h2><hr><ul>\n"
@@ -14,7 +15,7 @@ const htmlPostfix = "</ul></body></html>"
 
 func requestHandler(w http.ResponseWriter, req *http.Request) {
 
-	filePath := "./" + req.RequestURI
+	filePath := filepath.Join(".", req.RequestURI)
 
 	fileStat, err := os.Stat(filePath)
 
