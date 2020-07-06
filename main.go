@@ -18,6 +18,7 @@ const htmlPostfix = "</ul></body></html>"
 func requestHandler(w http.ResponseWriter, req *http.Request) {
 
 	filePath := filepath.Join(".", req.RequestURI)
+	fmt.Println(filePath)
 
 	fileStat, err := os.Stat(filePath)
 
@@ -65,8 +66,15 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 
 func run(portNumber int) error {
 
+	path, err := os.Getwd()
+	if err != nil {
+		return err
+	}
+
+	portNumberStr := strconv.Itoa(portNumber)
+	fmt.Println("[Here] - serving " + path + " at port " + portNumberStr)
 	http.HandleFunc("/", requestHandler)
-	if err := http.ListenAndServe("127.0.0.1:"+strconv.Itoa(portNumber), nil); err != nil {
+	if err := http.ListenAndServe("127.0.0.1:"+portNumberStr, nil); err != nil {
 		return err
 	}
 	return nil
