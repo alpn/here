@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"strconv"
 )
@@ -59,6 +60,11 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 
 	f, err := os.Open(filePath)
 	defer f.Close()
+
+	if path.Ext(filePath) == ".css" {
+		w.Header().Add("Content-Type", "text/css ; charset=utf-8")
+	}
+
 	if _, err = io.Copy(w, f); err != nil {
 		fmt.Println(err)
 	}
