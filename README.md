@@ -1,6 +1,7 @@
 Here
 ===
 ![](https://github.com/alpn/here/workflows/Go/badge.svg)
+[![Go Report Card](https://goreportcard.com/badge/github.com/alpn/here)](https://goreportcard.com/report/github.com/alpn/here)
 
 As-Simple-As-Possible HTTP server for **local** use.
 
@@ -24,3 +25,6 @@ here
 here -port 80
 
 ``` 
+
+## License
+MIT
