@@ -11,6 +11,7 @@ import (
 	"path"
 	"path/filepath"
 	"strconv"
+	"github.com/gomarkdown/markdown"
 )
 
 const htmlPrefix = "<html><body><h2>Here</h2><hr><ul>\n"
@@ -58,6 +59,26 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 
 	}
 
+	// Render Markdown files to HTML
+	if path.Ext(filePath) == ".md" {
+		md, err := ioutil.ReadFile(filePath);
+		if err != nil {
+			fmt.Println(err)
+			w.Write([]byte("500"))
+			return;
+		}
+
+		html := `<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+			<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>`
+
+		w.Write([]byte(html))
+
+		rendered_md := markdown.ToHTML(md, nil, nil)
+		w.Write(rendered_md)
+
+		return
+	}
+
 	f, err := os.Open(filePath)
 	defer f.Close()
 
@@ -68,6 +89,7 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 	if _, err = io.Copy(w, f); err != nil {
 		fmt.Println(err)
 	}
+
 }
 
 func run(portNumber int) error {
@@ -85,6 +107,7 @@ func run(portNumber int) error {
 	}
 	return nil
 }
+
 func main() {
 
 	var portNumber int
