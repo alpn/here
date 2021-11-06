@@ -100,9 +100,13 @@ func run(portNumber int) error {
 	}
 
 	portNumberStr := strconv.Itoa(portNumber)
+    localhostStr := "localhost"
+
 	fmt.Println("[Here] - serving " + path + " at port " + portNumberStr)
+    fmt.Println("http://" + localhostStr + ":" + portNumberStr)
+
 	http.HandleFunc("/", requestHandler)
-	if err := http.ListenAndServe("127.0.0.1:"+portNumberStr, nil); err != nil {
+	if err := http.ListenAndServe(localhostStr + ":"+portNumberStr, nil); err != nil {
 		return err
 	}
 	return nil
