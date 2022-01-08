@@ -68,9 +68,42 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 			return;
 		}
 
-		html := `<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-			<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>`
+		html := 
+        `<head><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+        <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/atom-one-dark.min.css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>	
+        <style>
+            html {
+              max-width: 70ch;
+              padding: 3em 1em;
+              margin: auto;
+              line-height: 1.75;
+              font-size: 1.25em;
+              font-family: sans-serif;
+            }
 
+            img {
+              max-width: 70ch;
+            }
+            a{
+                text-decoration: none;
+                color : red
+            }
+        </style>
+		<script>
+		window.MathJax = {
+			tex: {
+			  macros: {
+				R : "\\mathbb{R}",
+				map : "#1:#2\\rightarrow#3"
+			  }
+			}
+		  };
+		
+          hljs.highlightAll();
+		  </script></head>
+		`
 		w.Write([]byte(html))
 
 		rendered_md := markdown.ToHTML(md, nil, nil)
