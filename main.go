@@ -197,7 +197,7 @@ func generateStaticBlog() {
 		}
 
 		postDate := t.BirthTime().Format("2006-01-02")
-		html += "<li><a href='" + fileNameHtml + "'>" + postDate + " " + fileNameNoExt + "</a></li>\n"
+		html += "<li><a href='" + fileNameHtml + "'>" + "<span style='color:black'>" + postDate + "</span>"+ " " + fileNameNoExt + "</a></li>\n"
 	}
 
 	html += htmlPostfix
