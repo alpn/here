@@ -16,7 +16,10 @@ import (
 	"github.com/djherbis/times"
 )
 
-const htmlPrefix = `<html><body><h2>Here</h2><hr><ul>`
+func htmlPrefix(title string) string{
+	return `<html><body><h2>` + title + `</h2><hr><ul>`
+}
+
 const htmlPostfix = `</ul></body></html>`
 const css = 
 `
@@ -64,7 +67,7 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(err)
 		}
 
-		var html = htmlPrefix
+		var html = htmlPrefix("Here")
 
 		for _, file := range files {
 			var line = file.Name()
@@ -139,7 +142,7 @@ func handleMarkdownFile(filePath string, w io.Writer) error{
 	return nil
 }
 
-func generateStaticBlog() {
+func generateStaticBlog(name string) {
 
 	postsPath := filepath.Join(".", "posts")
 	blogPath := filepath.Join(".", "blog")
@@ -160,7 +163,7 @@ func generateStaticBlog() {
 		log.Fatal(err)
 	}
 
-	var html = htmlPrefix + css
+	var html = htmlPrefix(name) + css
 
 	for _, file := range files {
 		var fileName = file.Name()
@@ -243,7 +246,7 @@ func main() {
 
     if makeBlog {
         log.Println("Generating static blog")
-		generateStaticBlog()
+		generateStaticBlog("Blog")
         return
     }
 
