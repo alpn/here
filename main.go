@@ -16,8 +16,8 @@ import (
 	"github.com/djherbis/times"
 )
 
-func htmlPrefix(title string) string{
-	return `<html><body><h2>` + title + `</h2><hr><ul>`
+func htmlPrefix(title string, customHead string) string{
+	return `<!DOCTYPE html>` + `<html><head><title>` + title + `</title>` + customHead + `</head><body>`
 }
 
 const htmlPostfix = `</ul></body></html>`
@@ -67,7 +67,9 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 			log.Fatal(err)
 		}
 
-		var html = htmlPrefix("Here")
+		title := "Here"
+		var html = htmlPrefix(title, "")
+		html += `<h2>` + title + `</h2><hr><ul>`
 
 		for _, file := range files {
 			var line = file.Name()
@@ -112,8 +114,8 @@ func handleMarkdownFile(filePath string, w io.Writer) error{
 		return err
 	}
 
-	html :=
-	`<head><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	customHead := css +
+	`<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/atom-one-dark.min.css">
 	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
@@ -130,7 +132,7 @@ func handleMarkdownFile(filePath string, w io.Writer) error{
 		hljs.highlightAll();
 		</script></head>
 	`
-	html += css
+	html := htmlPrefix("", customHead)
 
 	n,_ := w.Write([]byte(html))
 	log.Println("written: " , strconv.Itoa(n))
@@ -163,7 +165,8 @@ func generateStaticBlog(name string) {
 		log.Fatal(err)
 	}
 
-	var html = htmlPrefix(name) + css
+	var html = htmlPrefix(name, css)
+	html += `<h2>` + name + `</h2><hr><ul>`
 
 	for _, file := range files {
 		var fileName = file.Name()
