@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"bufio"
+	"bytes"
 	"path"
 	"path/filepath"
 	"strconv"
@@ -132,7 +133,15 @@ func handleMarkdownFile(filePath string, w io.Writer) error{
 		hljs.highlightAll();
 		</script></head>
 	`
-	html := htmlPrefix("", customHead)
+
+	bytesReader := bytes.NewReader(md)
+	bufReader := bufio.NewReader(bytesReader)
+	title, _, err := bufReader.ReadLine()
+	if nil != err {
+		log.Fatal(err)
+	}
+
+	html := htmlPrefix(string(title), customHead)
 	w.Write([]byte(html))
 
 	rendered_md := markdown.ToHTML(md, nil, nil)
