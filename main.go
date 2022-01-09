@@ -133,9 +133,7 @@ func handleMarkdownFile(filePath string, w io.Writer) error{
 		</script></head>
 	`
 	html := htmlPrefix("", customHead)
-
-	n,_ := w.Write([]byte(html))
-	log.Println("written: " , strconv.Itoa(n))
+	w.Write([]byte(html))
 
 	rendered_md := markdown.ToHTML(md, nil, nil)
 	w.Write(rendered_md)
@@ -153,11 +151,11 @@ func generateStaticBlog(name string) {
 	blogDir, blogErr := os.Stat(blogPath)
 
 	if  nil != postsErr || nil != blogErr{
-		return
+		log.Fatal(`Missing "posts" and/or "blog" directories`)
 	}
 
 	if !postsDir.IsDir() || !blogDir.IsDir() {
-		return
+		log.Fatal(`Missing "posts" and/or "blog" directories`)
 	}
 
 	files, err := ioutil.ReadDir(postsPath)
