@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
     "github.com/gomarkdown/markdown"
+	"github.com/djherbis/times"
 )
 
 const htmlPrefix = `<html><body><h2>Here</h2><hr><ul>`
@@ -170,7 +171,10 @@ func generateStaticBlog() {
 		filePath := filepath.Join(postsPath, fileName)
 		log.Println("Handling " + filePath)
 
-		htmlPostPath := filepath.Join(blogPath, strings.TrimSuffix(fileName, filepath.Ext(fileName))+".html")
+		fileNameNoExt := strings.TrimSuffix(fileName, filepath.Ext(fileName))
+		fileNameHtml := fileNameNoExt + ".html"
+
+		htmlPostPath := filepath.Join(blogPath, fileNameHtml)
 		f, err := os.Create(htmlPostPath)
 		defer f.Close()
 
@@ -183,7 +187,17 @@ func generateStaticBlog() {
 
 		w.Flush()
 
-		html += "<li><a href='" + fileName + "'>" + fileName + "</a></li>\n"
+		t, err := times.Stat(filePath)
+		if err != nil {
+		  log.Fatal(err.Error())
+		}
+
+		if !t.HasBirthTime() {
+			log.Fatal("Could not get file's birthtime")
+		}
+
+		postDate := t.BirthTime().Format("2006-01-02")
+		html += "<li><a href='" + fileNameHtml + "'>" + postDate + " " + fileNameNoExt + "</a></li>\n"
 	}
 
 	html += htmlPostfix
