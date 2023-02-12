@@ -1,30 +1,29 @@
 package main
 
 import (
+	"bufio"
+	"bytes"
 	"flag"
+	"github.com/djherbis/times"
+	"github.com/gomarkdown/markdown"
 	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
-	"bufio"
-	"bytes"
 	"path"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
-    "sort"
-    "github.com/gomarkdown/markdown"
-	"github.com/djherbis/times"
 )
 
-func htmlPrefix(title string, customHead string) string{
+func htmlPrefix(title string, customHead string) string {
 	return `<!DOCTYPE html>` + `<html><head><title>` + title + `</title>` + customHead + `</head><body>`
 }
 
 const htmlPostfix = `</ul></body></html>`
-const css = 
-`
+const css = `
         <style>
             html {
               max-width: 70ch;
@@ -75,20 +74,20 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 		var html = htmlPrefix(title, "")
 		html += `<h2>` + title + `</h2><hr><ul>`
 
-        sort.SliceStable(files, func(i, j int) bool {
-            if files[i].IsDir() && !files[j].IsDir(){
-                return true
-            }
-            return strings.ToLower(files[i].Name()) < strings.ToLower(files[j].Name())
-        })
+		sort.SliceStable(files, func(i, j int) bool {
+			if files[i].IsDir() && !files[j].IsDir() {
+				return true
+			}
+			return strings.ToLower(files[i].Name()) < strings.ToLower(files[j].Name())
+		})
 
 		for _, file := range files {
 
 			var line = file.Name()
 
-            if line[0] == '.' {
-                continue
-            }
+			if line[0] == '.' {
+				continue
+			}
 
 			if file.IsDir() {
 				line += "/"
@@ -122,9 +121,9 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 
 }
 
-func handleMarkdownFile(filePath string, w io.Writer) error{
+func handleMarkdownFile(filePath string, w io.Writer) error {
 
-	md, err := ioutil.ReadFile(filePath);
+	md, err := ioutil.ReadFile(filePath)
 	if err != nil {
 		log.Println(err)
 		w.Write([]byte("500"))
@@ -132,7 +131,7 @@ func handleMarkdownFile(filePath string, w io.Writer) error{
 	}
 
 	customHead := css +
-	`<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+		`<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
 	<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3.0.1/es5/tex-mml-chtml.js"></script>
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/styles/atom-one-dark.min.css">
 	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.3.1/highlight.min.js"></script>
@@ -175,7 +174,7 @@ func generateStaticBlog(name string) {
 	postsDir, postsErr := os.Stat(postsPath)
 	blogDir, blogErr := os.Stat(blogPath)
 
-	if  nil != postsErr || nil != blogErr{
+	if nil != postsErr || nil != blogErr {
 		log.Fatal(`Missing "posts" and/or "blog" directories`)
 	}
 
@@ -210,7 +209,7 @@ func generateStaticBlog(name string) {
 		w := bufio.NewWriter(f)
 
 		err = handleMarkdownFile(filePath, w)
-		if nil != err{
+		if nil != err {
 			log.Fatal(err)
 		}
 
@@ -218,7 +217,7 @@ func generateStaticBlog(name string) {
 
 		t, err := times.Stat(filePath)
 		if err != nil {
-		  log.Fatal(err.Error())
+			log.Fatal(err.Error())
 		}
 
 		if !t.HasBirthTime() {
@@ -226,7 +225,7 @@ func generateStaticBlog(name string) {
 		}
 
 		postDate := t.BirthTime().Format("2006-01-02")
-		html += "<li><a href='" + fileNameHtml + "'>" + "<span style='color:black'>" + postDate + "</span>"+ " " + fileNameNoExt + "</a></li>\n"
+		html += "<li><a href='" + fileNameHtml + "'>" + "<span style='color:black'>" + postDate + "</span>" + " " + fileNameNoExt + "</a></li>\n"
 	}
 
 	html += htmlPostfix
@@ -248,14 +247,14 @@ func runServer(portNumber int) error {
 	}
 
 	portNumberStr := strconv.Itoa(portNumber)
-    localhostStr := "localhost"
+	localhostStr := "localhost"
 
 	log.Println("[Here]")
 	log.Println("Serving: " + path)
-    log.Println("http://" + localhostStr + ":" + portNumberStr)
+	log.Println("http://" + localhostStr + ":" + portNumberStr)
 
 	http.HandleFunc("/", requestHandler)
-	if err := http.ListenAndServe(localhostStr + ":"+portNumberStr, nil); err != nil {
+	if err := http.ListenAndServe(localhostStr+":"+portNumberStr, nil); err != nil {
 		return err
 	}
 	return nil
@@ -270,13 +269,13 @@ func main() {
 	flag.BoolVar(&makeBlog, "b", false, "generate static blog")
 	flag.Parse()
 
-    if makeBlog {
-        log.Println("Generating static blog")
+	if makeBlog {
+		log.Println("Generating static blog")
 		generateStaticBlog("Blog")
-        return
-    }
+		return
+	}
 
-    if err := runServer(portNumber); err != nil {
+	if err := runServer(portNumber); err != nil {
 		log.Fatal(err)
 	}
 
