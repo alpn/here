@@ -83,7 +83,13 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
         })
 
 		for _, file := range files {
+
 			var line = file.Name()
+
+            if line[0] == '.' {
+                continue
+            }
+
 			if file.IsDir() {
 				line += "/"
 			}
