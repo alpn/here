@@ -13,6 +13,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+    "sort"
     "github.com/gomarkdown/markdown"
 	"github.com/djherbis/times"
 )
@@ -73,6 +74,13 @@ func requestHandler(w http.ResponseWriter, req *http.Request) {
 		title := "Here"
 		var html = htmlPrefix(title, "")
 		html += `<h2>` + title + `</h2><hr><ul>`
+
+        sort.SliceStable(files, func(i, j int) bool {
+            if files[i].IsDir() && !files[j].IsDir(){
+                return true
+            }
+            return strings.ToLower(files[i].Name()) < strings.ToLower(files[j].Name())
+        })
 
 		for _, file := range files {
 			var line = file.Name()
