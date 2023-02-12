@@ -31,7 +31,9 @@ const css =
               margin: auto;
               line-height: 1.75;
               font-size: 1.25em;
-              font-family: sans-serif;
+              color : white;
+              background-color : black;
+              font-family: 'Courier New', monospace;
             }
 
             img {
